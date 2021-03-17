@@ -2,7 +2,7 @@
 
 DWF is not approved of, by, or affiliated with MITRE. DWF is community project to assign security identifiers. We would love it if you joined us!
 
-DWF IDs take the form of CAN or CVE, then a 4 digit year YYYY, then an integer identifier XXXXXXX. The integers start at 1000000, anything below one million is a MITRE CVE ID. Anything above one million is a DWF ID. So for example CVE-2021-1000000. Read below to understand the difference between CAN and CVE.
+DWF IDs take the form of the string "DWF", a hyphen, a 4 digit year "YYYY," a hyphen, then an integer identifier XXXXXXX. The integers start at 1000000. Anything that starts with "CVE" is a CVE ID. Anything above one million and starts with "DWF" is a DWF ID. So for example DWF-2021-1000000.
 
 # dwf-form
 Repo for the tooling that drives requesting a DWF ID
@@ -65,31 +65,31 @@ push the branch
 ## Tooling discussion
 Please file issues about the tooling in the dwf-request repo: https://github.com/distributedweaknessfiling/dwf-request/issues
 
-## Contesting/disputing a DWF CVE ID
+## Contesting/disputing a DWF ID
 
-If you think a DWF CVE ID contains an error or isn't valid please file an issue in the [dwf-workflow](https://github.com/distributedweaknessfiling/dwf-workflow) repo.
+If you think a DWF ID contains an error or isn't valid please file an issue in the [dwf-workflow](https://github.com/distributedweaknessfiling/dwf-workflow) repo.
 
-## General discussion of DWF CVE IDs and the project
+## General discussion of DWF IDs and the project
 
-If you want to discuss workflow or the DWF CVE ID project in general please use the dwf-workflow repo: https://github.com/distributedweaknessfiling/dwf-workflow/issues
+If you want to discuss workflow or the DWF ID project in general please use the dwf-workflow repo: https://github.com/distributedweaknessfiling/dwf-workflow/issues
 
-# How to request a DWF CVE ID
+# How to request a DWF ID
 
-To request a DWF CVE ID please go to https://iwantacve.org/
+To request a DWF ID please go to https://iwantacve.org/
 
-# What gets a DWF CVE ID?
+# What gets a DWF ID?
 
 Any weakness that results in a vulnerability that an attacker can meaningfully exploit.
 
 The attacker must be able to trigger the vulnerability in order to cross some sort of trust boundary and have a meaningful effect. It can be a privilege escalation, seeing information they should not have access to, or crashing the system remotely.
 
-Like most things in life there is a spectrum ranging from "obviously this needs a DWF CVE ID" to "this is clearly not a security issue" to "it's somewhere in the middle" some simple examples:
+Like most things in life there is a spectrum ranging from "obviously this needs a DWF ID" to "this is clearly not a security issue" to "it's somewhere in the middle" some simple examples:
 
-## Definitely needs a DWF CVE ID:
+## Definitely needs a DWF ID:
 
-Ping of death v2 (CVE-2020-16898 and CVE-2020-16899) a ping packet sent remotely crashes Windows.
+Ping of death v2 (for example, CVE-2020-16898 and CVE-2020-16899) a ping packet sent remotely crashes Windows.
 
-## Probably needs a DWF CVE ID 
+## Probably needs a DWF ID 
 
 Establishing 10,000 connections to a web server that explicitly claims to support 10,000 connections crashes it. Effectively a promise/guarantee was made that is being broken.
 
@@ -103,7 +103,7 @@ Official documentation that encourages the use of a known vulnerable configurati
 
 Source code and configuration examples that include vulnerabilities, for example SQL code in a textbook that includes an SQL injection vulnerability.
 
-## Definitely does NOT need a DWF CVE ID:
+## Definitely does NOT need a DWF ID:
 
 A 100 gigabyte file that when loaded into an image editing program results in a large amount of memory being used. That's just how things work.
 
@@ -111,8 +111,8 @@ A 100 gigabyte file that when loaded into an image editing program results in a 
 
 ## Local program crashes
 
-If a file crashes a locally executed program this is generally not DWF CVE ID worthy, unless it completely crashes a program that is commonly handling other data, files or tasks causing a denial of service effect that is noticeable to the user. If the file simply cannot be loaded properly and no other real effect occurs than the simple answer is "it's a broken file, it causes no problem, it just can't be loaded, to bad."
+If a file crashes a locally executed program this is generally not DWF ID worthy, unless it completely crashes a program that is commonly handling other data, files or tasks causing a denial of service effect that is noticeable to the user. If the file simply cannot be loaded properly and no other real effect occurs than the simple answer is "it's a broken file, it causes no problem, it just can't be loaded, to bad."
 
 ## Fuzzer/Fuzzing results
 
-Fuzzer/Fuzzing results vary tremendously in quality and quantity. As such it is highly unlikely that EACH fuzzing results needs a DWF CVE ID, they need to be properly researched and merged depending on their root cause. Additionally unless a fuzzing result causes an obvious security issue such as remotely crashing a network server it needs to be further researched to determine if there is any meaningful security impact from the fuzzing result. In short with fuzzing results you need to 1) show a security impact and 2) if you have multiple results show that they are unique to some degree (e.g. different file types, crashes with different error messages, etc.)
+Fuzzer/Fuzzing results vary tremendously in quality and quantity. As such it is highly unlikely that EACH fuzzing results needs a DWF ID, they need to be properly researched and merged depending on their root cause. Additionally unless a fuzzing result causes an obvious security issue such as remotely crashing a network server it needs to be further researched to determine if there is any meaningful security impact from the fuzzing result. In short with fuzzing results you need to 1) show a security impact and 2) if you have multiple results show that they are unique to some degree (e.g. different file types, crashes with different error messages, etc.)
