@@ -36,7 +36,7 @@ class Issue:
 		for i in comments:
 			if i['user']['login'] == username:
 				if i['body'].startswith('This issue has been assigned'):
-					match = re.search('((CVE|CAN)-\d{4}-\d+)', i['body'])	
+					match = re.search('((DWF|CAN)-\d{4}-\d+)', i['body'])	
 					dwf_id = match.groups()[0]
 					return dwf_id	
 		return None
@@ -128,7 +128,7 @@ class Issue:
 		# Get the path to the file
 		year = can_id.split('-')[1]
 		id_str = can_id.split('-')[2]
-		dwf_id = "CVE-%s-%s" % (year, id_str)
+		dwf_id = "DWF-%s-%s" % (year, id_str)
 
 		self.title = self.title.replace(can_id, dwf_id)		
 		body = {
@@ -228,7 +228,7 @@ class DWFRepo:
 		year = can_id.split('-')[1]
 		id_str = can_id.split('-')[2]
 		namespace = "%sxxx" % id_str[0:-3]
-		dwf_id = "CVE-%s-%s" % (year, id_str)
+		dwf_id = "DWF-%s-%s" % (year, id_str)
 		filename = "%s.json" % (dwf_id)
 
 		can_file = os.path.join(year, namespace, filename)
@@ -239,9 +239,9 @@ class DWFRepo:
 				# Read the json
 				can_data = json.loads(json_file.read())
 
-		# Swap the CAN to CVE
-		can_data['data_type'] = 'CVE'
-		can_data['CVE_data_meta']['ID'] = dwf_id
+		# Swap the CAN to DWF
+		can_data['data_type'] = 'DWF'
+		can_data['DWF_data_meta']['ID'] = dwf_id
 
 		dwf_json = json.dumps(can_data, indent=2)
 		dwf_json = dwf_json + "\n"
@@ -307,7 +307,7 @@ class DWFRepo:
 			if not os.path.exists(block_path):
 				# This is a new path with no files
 				os.mkdir(block_path)
-				the_dwf = "CVE-%s-%s000" % (year, i)
+				the_dwf = "DWF-%s-%s000" % (year, i)
 				dwf_path = os.path.join(block_path, "%s.json" % the_dwf)
 				if not approved_user:
 					the_dwf = "CAN-%s-%s000" % (year, i)
@@ -324,7 +324,7 @@ class DWFRepo:
 					# It's time to roll over, we'll pick up the ID in the next loop
 					continue
 
-				the_dwf = "CVE-%s-%s" % (year, next_id)
+				the_dwf = "DWF-%s-%s" % (year, next_id)
 				dwf_path = os.path.join(block_path, "%s.json" % the_dwf)
 				if not approved_user:
 					the_dwf = "CAN-%s-%s" % (year, next_id)
@@ -365,17 +365,17 @@ class DWFRepo:
 
 		# metadata
 			# Or CAN
-		if dwf_id.startswith("CVE"):
-			c["data_type"] = "CVE"
+		if dwf_id.startswith("DWF"):
+			c["data_type"] = "DWF"
 		else:
 			c["data_type"] = "CAN"
 		c["data_format"] = "MITRE"
 		c["data_version"] = "4.0"
-		c["CVE_data_meta"] = {}
-		c["CVE_data_meta"]["ASSIGNER"] = "dwf"
+		c["DWF_data_meta"] = {}
+		c["DWF_data_meta"]["ASSIGNER"] = "dwf"
 			# CAN ID
-		c["CVE_data_meta"]["ID"] = dwf_id
-		c["CVE_data_meta"]["STATE"] = "PUBLIC"
+		c["DWF_data_meta"]["ID"] = dwf_id
+		c["DWF_data_meta"]["STATE"] = "PUBLIC"
 
 		# affected
 		c["affects"] = {};
@@ -440,8 +440,8 @@ def main():
 		# Look for new issues
 		for i in new_issues:
 
-			if re.search('(CVE|CAN)-\d{4}-\d+', i.title):
-				# There shouldn't be a CVE/CAN ID in the title, bail on this issue
+			if re.search('(DWF|CAN)-\d{4}-\d+', i.title):
+				# There shouldn't be a DWF/CAN ID in the title, bail on this issue
 				print("Found an ID in the title for issue %s" % i.id)
 				continue
 
