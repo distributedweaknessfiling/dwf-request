@@ -338,91 +338,76 @@ class DWFRepo:
 		#[vulnerability type] exists in the [affected component] that can be
 		#attacked via [attack vector] resulting in [impact of exploitation].
 
-		# In [vendor name]
-		the_string = "In " + issue_data["vendor_name"] + " "
-		# [product name] version
-		the_string = the_string + issue_data["product_name"] + " version "
-		# [version info] a
-		the_string = the_string + issue_data["product_version"] + " a "
-		# [vulnerability type] exists in the
-		the_string = the_string + issue_data["vulnerability_type"] + " exists in the "
-		# [affected component] that can be attacked via
-		the_string = the_string + issue_data["affected_component"] + " that can be attacked via "
-		# [attack vector] resulting in
-		the_string = the_string + issue_data["attack_vector"] + " resulting in "
-		# [impact of exploitation].
-		#                         ^ Don't forget the punctuation
-		the_string = the_string + issue_data["impact"] + "."
-
-		return the_string;
+		the_string = f'''In {issue_data["vendor_name"]} {issue_data["product name"]} version {issue_data["version info"]} a
+				{issue_data["vulnerability type"]} exists in the {issue_data["affected component"]} that can be
+				attacked via {issue_data["attack vector"]} resulting in {issue_data["impact of exploitation"]}.'''
+		return the_string
 
 	def get_dwf_json_format(self, dwf_id, issue_data):
 
 		# This data format is beyond terrible. Apologies if you found this. I am ashamed for the author of it.
 		# We will fix it someday, but not today. The initial goal is to be compatible
-
-		c = {};
-
-		# metadata
-			# Or CAN
-		if dwf_id.startswith("CVE"):
-			c["data_type"] = "CVE"
-		else:
-			c["data_type"] = "CAN"
-		c["data_format"] = "MITRE"
-		c["data_version"] = "4.0"
-		c["CVE_data_meta"] = {}
-		c["CVE_data_meta"]["ASSIGNER"] = "dwf"
-			# CAN ID
-		c["CVE_data_meta"]["ID"] = dwf_id
-		c["CVE_data_meta"]["STATE"] = "PUBLIC"
-
-		# affected
-		c["affects"] = {};
-		c["affects"]["vendor"] = {}
-		c["affects"]["vendor"]["vendor_data"] = []
-		c["affects"]["vendor"]["vendor_data"].append({})
-		c["affects"]["vendor"]["vendor_data"][0]["vendor_name"] = issue_data["vendor_name"]
-		c["affects"]["vendor"]["vendor_data"][0]["product"] = {}
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"] = []
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"].append({})
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"][0]["product_name"] = issue_data["product_name"]
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"][0]["version"] = {}
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"][0]["version"]["version_data"] = []
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"][0]["version"]["version_data"].append({})
-		# ಠ_ಠ
-		c["affects"]["vendor"]["vendor_data"][0]["product"]["product_data"][0]["version"]["version_data"][0]["version_value"] = issue_data["product_version"]
-
-		# problem
-		c["problemtype"] = {}
-		c["problemtype"]["problemtype_data"] = []
-		c["problemtype"]["problemtype_data"].append({})
-		c["problemtype"]["problemtype_data"][0]["description"] = []
-		c["problemtype"]["problemtype_data"][0]["description"].append({})
-		c["problemtype"]["problemtype_data"][0]["description"][0]["lang"] = "eng"
-		c["problemtype"]["problemtype_data"][0]["description"][0]["value"] = issue_data["vulnerability_type"]
-
-		# references
-		c["references"] = {}
-		c["references"]["reference_data"] = []
-		# This will be a loop, we can have multiple references
-		for i in issue_data["references"]:
-			c["references"]["reference_data"].append({})
-			c["references"]["reference_data"][-1]["url"] = i
-			c["references"]["reference_data"][-1]["refsource"] = "MISC"
-			c["references"]["reference_data"][-1]["name"] = i
-
-		# description
-		c["description"] = {}
-		c["description"]["description_data"] = []
-		c["description"]["description_data"].append({})
-		c["description"]["description_data"][0]["lang"] = "eng"
-		c["description"]["description_data"][0]["value"] = self.generate_description(issue_data)
-
-		# DWF namespace
-		# If there is any new data to add, do it here. The previous fields should be treated as legacy
-		c["dwf"] = issue_data
-
+		c = {
+			# metadata
+			# Only two values possible? This might need to be a function if not.
+			"data_type": "CVE" if dwf_id.startswith("CVE") else "CAN",
+			"data_format": "MITRE",
+			"data_version": "4.0",
+			"CVE_data_meta": {
+				"ASSIGNER": "dwf",
+				# CAN ID
+				"ID": dwf_id,
+				"STATE": "PUBLIC",
+			},
+			# affected
+			"affects": {
+				"vendor": {
+					"vendor_data": [{
+						"vendor_name": issue_data["vendor_name"],
+						"product": {
+							"product_data": [{}],
+							"product_name": issue_data["product_name"],
+							"version": {
+								"version_data": [{
+									# ಠ_ಠ
+									"version_value": issue_data["product_version"],
+									}],
+								},
+							},
+	
+						}],
+					}
+				},
+			# problem
+			"problemtype": {
+				"problemtype_data": [{
+					"description": [{
+						"lang": "eng",
+						"value": issue_data["vulnerability_type"],
+					}],
+				}],
+				},
+	
+			# references
+			"references": {
+				# This will be a list comprehension, we can have multiple references
+				"reference_data": [{
+					"url": i,
+					"refsource": "MISC",
+					"name": i
+					} for i in issue_data["references"]] # Don't miss the end of the comprehension
+				},
+			# description
+			"description": {
+				"description_data": [{
+					"lang": "eng",
+					"value": self.generate_description(issue_data),
+					}],
+				},
+			# DWF namespace
+			# If there is any new data to add, do it here. The previous fields should be treated as legacy
+			"dwf": issue_data,
+			}
 		return c
 
 def main():
